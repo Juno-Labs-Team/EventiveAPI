@@ -7,19 +7,19 @@ const router = Router();
  * POST /api/auth/callback
  * Handle OAuth callback (placeholder - actual OAuth is handled by Supabase)
  */
-router.post('/callback', authLimiter, async (req, res) => {
+router.post('/callback', authLimiter, async (_req, res) => {
   try {
     // In a real implementation, you might:
     // 1. Exchange auth code for tokens
     // 2. Create/update user profile
     // 3. Return JWT to client
     
-    res.json({
+    return res.json({
       success: true,
       message: 'OAuth callback handled by Supabase client SDK',
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: { message: error.message },
     });
@@ -42,12 +42,12 @@ router.post('/refresh', authLimiter, async (req, res) => {
     }
     
     // Token refresh is handled by Supabase client SDK
-    res.json({
+    return res.json({
       success: true,
       message: 'Token refresh handled by Supabase client SDK',
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: { message: error.message },
     });
@@ -58,15 +58,15 @@ router.post('/refresh', authLimiter, async (req, res) => {
  * POST /api/auth/logout
  * Sign out user (placeholder)
  */
-router.post('/logout', async (req, res) => {
+router.post('/logout', async (_req, res) => {
   try {
     // Logout is handled by Supabase client SDK
-    res.json({
+    return res.json({
       success: true,
       message: 'Logged out successfully',
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: { message: error.message },
     });
