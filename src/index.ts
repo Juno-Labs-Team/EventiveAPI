@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -36,7 +36,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
@@ -52,7 +52,7 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/uploads', uploadRoutes);
 
 // API documentation (placeholder)
-app.get('/docs', (req: Request, res: Response) => {
+app.get('/docs', (_req: Request, res: Response) => {
   res.json({
     message: 'API Documentation',
     version: '0.1.0',
