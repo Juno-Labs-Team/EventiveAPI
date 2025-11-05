@@ -32,12 +32,12 @@ router.get('/me', authenticateUser, async (req: AuthRequest, res: Response) => {
       });
     }
     
-    res.json({
+    return res.json({
       success: true,
       data: profile,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: { message: error.message },
     });
@@ -81,12 +81,12 @@ router.put('/me', authenticateUser, async (req: AuthRequest, res: Response) => {
       });
     }
     
-    res.json({
+    return res.json({
       success: true,
       data: profile,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: { message: error.message },
     });
@@ -128,12 +128,12 @@ router.get('/:id', async (req, res) => {
       });
     }
     
-    res.json({
+    return res.json({
       success: true,
       data: profile,
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: { message: error.message },
     });
