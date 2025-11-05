@@ -12,7 +12,7 @@ const upload = multer({
   limits: {
     fileSize: config.storage.maxFileSize, // 5MB
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     // Only allow images
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
@@ -108,14 +108,14 @@ router.post(
         });
       }
       
-      res.json({
+      return res.json({
         success: true,
         data: {
           url: urlData.publicUrl,
         },
       });
     } catch (error: any) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error: { message: error.message },
       });
@@ -173,12 +173,12 @@ router.delete('/avatar', authenticateUser, async (req: AuthRequest, res: Respons
       });
     }
     
-    res.json({
+    return res.json({
       success: true,
       message: 'Avatar deleted successfully',
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: { message: error.message },
     });
