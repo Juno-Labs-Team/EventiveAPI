@@ -53,7 +53,7 @@ export async function authenticateUser(
       role: profile?.role || 'user',
     };
     
-    next();
+    return next();
   } catch (error) {
     console.error('Authentication error:', error);
     return res.status(500).json({
@@ -85,5 +85,5 @@ export function requireAdmin(
     });
   }
   
-  next();
+  return next();
 }
