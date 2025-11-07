@@ -36,3 +36,5 @@ prisma/*.db-journal
 tmp/
 temp/
 *.tmp
+
+*.tar
