@@ -38,3 +38,5 @@ temp/
 *.tmp
 
 *.tar
+
+deploy-synology.sh
