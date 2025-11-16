@@ -11,6 +11,10 @@ export const config = {
     anonKey: process.env.SUPABASE_ANON_KEY || '',
   },
   
+  auth: {
+    useCustomAuth: process.env.USE_CUSTOM_AUTH === 'true',
+  },
+  
   jwt: {
     secret: process.env.JWT_SECRET || 'change-this-secret',
   },
