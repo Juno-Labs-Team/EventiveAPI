@@ -118,7 +118,7 @@ public class UploadsController : ControllerBase
 
             return Ok(new { 
                 success = true, 
-                data = new { avatarUrl = publicUrl } 
+                data = new { url = publicUrl } 
             });
         }
         catch (Exception ex)
