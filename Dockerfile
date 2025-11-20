@@ -1,40 +1,40 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
 
-WORKDIR /app
+# Copy csproj and restore dependencies
+COPY EventiveAPI.CSharp.csproj .
+RUN dotnet restore
 
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci
-
-# Copy source code
+# Copy everything else and build
 COPY . .
+RUN dotnet build -c Release -o /app/build
+RUN dotnet publish -c Release -o /app/publish
 
-# Build TypeScript
-RUN npm run build
-
-# Production stage
-FROM node:20-alpine
-
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Install curl for health checks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
-# Install production dependencies only
-RUN npm ci --only=production
+# Copy published app
+COPY --from=build /app/publish .
 
-# Copy built code from builder
-COPY --from=builder /app/dist ./dist
+# Create non-root user
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
 
 # Expose port
-EXPOSE 3001
+EXPOSE 3000
+
+# Environment variables
+ENV ASPNETCORE_URLS=http://+:3000
+ENV ASPNETCORE_ENVIRONMENT=Production
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
 
-# Start server
-CMD ["node", "dist/index.js"]
+# Run the application
+ENTRYPOINT ["dotnet", "EventiveAPI.CSharp.dll"]
