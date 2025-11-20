@@ -1,0 +1,6 @@
+@EventiveAPI.CSharp_HostAddress = http://localhost:5266
+
+GET {{EventiveAPI.CSharp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
