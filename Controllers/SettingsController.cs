@@ -80,10 +80,7 @@ public class SettingsController : ControllerBase
             profile.Settings = request.Settings;
             profile.UpdatedAt = DateTime.UtcNow;
 
-            var response = await client
-                .From<UserProfile>()
-                .Update(profile);
-
+            var response = await profile.Update<UserProfile>();
             var updated = response.Models.FirstOrDefault();
 
             if (updated == null)
