@@ -84,12 +84,19 @@ try
     builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
     // Add CORS
-    var corsConfig = builder.Configuration.GetSection("Cors").Get<CorsConfig>() ?? new CorsConfig();
+    var corsOriginsEnv = Environment.GetEnvironmentVariable("CORS_ORIGINS");
+    
+    // Split the env string by comma, OR fallback to appsettings.json
+    var corsOrigins = !string.IsNullOrEmpty(corsOriginsEnv)
+        ? corsOriginsEnv.Split(',', StringSplitOptions.RemoveEmptyEntries)
+        : builder.Configuration.GetSection("Cors").Get<CorsConfig>()?.AllowedOrigins 
+          ?? Array.Empty<string>();
+
     builder.Services.AddCors(options =>
     {
         options.AddDefaultPolicy(policy =>
         {
-            policy.WithOrigins(corsConfig.AllowedOrigins)
+            policy.WithOrigins(corsOrigins)
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();
