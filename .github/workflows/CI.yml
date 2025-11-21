@@ -22,6 +22,4 @@ jobs:
             
             git pull origin main
             
-            docker build .
-
             ./restart-serv.sh
