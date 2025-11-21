@@ -8,11 +8,22 @@ public class SupabaseService
     private readonly Client _client;
     private readonly SupabaseConfig _config;
 
-    public SupabaseService(IConfiguration configuration)
+public SupabaseService(IConfiguration configuration)
     {
-        _config = configuration.GetSection("Supabase").Get<SupabaseConfig>() 
-            ?? throw new ArgumentNullException(nameof(configuration));
+ 
+        _config = new SupabaseConfig
+        {
+            Url = Environment.GetEnvironmentVariable("SUPABASE_URL") 
+                  ?? configuration["Supabase:Url"] ?? "",
+                  
+            ServiceRoleKey = Environment.GetEnvironmentVariable("SUPABASE_SERVICE_ROLE_KEY") 
+                             ?? configuration["Supabase:ServiceRoleKey"] ?? "",
+                             
+            AnonKey = Environment.GetEnvironmentVariable("SUPABASE_ANON_KEY") 
+                      ?? configuration["Supabase:AnonKey"] ?? ""
+        };
         
+        // Now validte the real values
         _config.Validate();
 
         var options = new SupabaseOptions
