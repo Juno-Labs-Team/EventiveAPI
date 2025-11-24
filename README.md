@@ -1,4 +1,4 @@
-refactoring to C#
+finished refactoring to C#, updating documentation soon
 
 # EventiveAPI
 
