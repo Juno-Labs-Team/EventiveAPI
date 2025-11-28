@@ -93,7 +93,7 @@ public class SettingsController : ControllerBase
 
             return Ok(new { success = true, data = updated.Settings ?? new Dictionary<string, object>() });
         }
-        catch (Exception ex)
+        catch (Exception ex) // right now it's just sayingf error update all the time but it still PUTs it in Supabase, weird
         {
             _logger.LogError(ex, "Error updating settings");
             return StatusCode(500, new { success = false, error = new { message = "Failed to update settings" } });
