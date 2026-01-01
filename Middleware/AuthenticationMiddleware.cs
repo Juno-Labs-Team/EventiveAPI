@@ -54,6 +54,8 @@ public class AuthenticationMiddleware
 
         try
         {
+            _logger.LogInformation("Validating token for request to {Path}", path);
+            
             // Verify token with Supabase
             var user = await supabaseService.GetUserFromToken(token);
             
@@ -70,12 +72,23 @@ public class AuthenticationMiddleware
                 return;
             }
 
+            _logger.LogInformation("Token validated successfully for user: {UserId}", user.Id);
+
             // Fetch user profile to get role
             var client = supabaseService.GetClient();
-            var profileResponse = await client
-                .From<UserProfile>()
-                .Where(p => p.Id == user.Id)
-                .Single();
+            UserProfile? profileResponse = null;
+            
+            try
+            {
+                profileResponse = await client
+                    .From<UserProfile>()
+                    .Where(p => p.Id == user.Id)
+                    .Single();
+            }
+            catch (Exception profileEx)
+            {
+                _logger.LogWarning(profileEx, "Could not fetch profile for user {UserId}, using default role", user.Id);
+            }
 
             var role = profileResponse?.Role ?? "user";
 

@@ -48,19 +48,24 @@ public class SupabaseService
         try
         {
             // Make a direct HTTP call to Supabase Auth API to validate the JWT
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{_config.Url}/auth/v1/user");
+            var url = $"{_config.Url}/auth/v1/user";
+            _logger.LogDebug("Validating token against {Url}", url);
+            
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             request.Headers.Add("apikey", _config.AnonKey);
             
             var response = await _httpClient.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+            
+            _logger.LogDebug("Supabase auth response: {StatusCode} - {Content}", response.StatusCode, content);
             
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogDebug("Token validation failed with status {StatusCode}", response.StatusCode);
+                _logger.LogWarning("Token validation failed with status {StatusCode}: {Content}", response.StatusCode, content);
                 return null;
             }
             
-            var content = await response.Content.ReadAsStringAsync();
             var userResponse = JsonSerializer.Deserialize<SupabaseUserResponse>(content, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -68,8 +73,11 @@ public class SupabaseService
             
             if (userResponse == null || string.IsNullOrEmpty(userResponse.Id))
             {
+                _logger.LogWarning("Failed to deserialize user response or missing ID");
                 return null;
             }
+            
+            _logger.LogDebug("Successfully validated token for user {UserId}", userResponse.Id);
             
             // Convert to Supabase.Gotrue.User
             return new Supabase.Gotrue.User
@@ -80,7 +88,7 @@ public class SupabaseService
         }
         catch (Exception ex)
         {
-            _logger.LogDebug(ex, "Failed to validate token");
+            _logger.LogError(ex, "Failed to validate token: {Message}", ex.Message);
             return null;
         }
     }
