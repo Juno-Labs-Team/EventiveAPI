@@ -59,6 +59,8 @@ public class AuthenticationMiddleware
             
             if (user == null)
             {
+                _logger.LogWarning("Token validation returned null for token starting with: {TokenPrefix}...", 
+                    token.Length > 20 ? token.Substring(0, 20) : token);
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsJsonAsync(new
                 {
@@ -92,7 +94,7 @@ public class AuthenticationMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Authentication error");
+            _logger.LogError(ex, "Authentication error: {Message}", ex.Message);
             context.Response.StatusCode = 500;
             await context.Response.WriteAsJsonAsync(new
             {
