@@ -41,7 +41,21 @@ public SupabaseService(IConfiguration configuration)
     {
         try
         {
-            var user = await _client.Auth.GetUser(token);
+            // Create a temporary client with the user's JWT token to validate it
+            var options = new SupabaseOptions
+            {
+                AutoConnectRealtime = false,
+                AutoRefreshToken = false
+            };
+            
+            var userClient = new Client(_config.Url, _config.AnonKey, options);
+            
+            // Set the session with the provided JWT token
+            await userClient.Auth.SetSession(token, token);
+            
+            // Get the user from the session
+            var user = userClient.Auth.CurrentUser;
+            
             return user;
         }
         catch
