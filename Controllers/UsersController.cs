@@ -89,6 +89,7 @@ public class UsersController : ControllerBase
 
             var response = await client
                 .From<UserProfile>()
+                .Where(p => p.Id == userId)
                 .Update(profile);
 
             var updated = response.Models.FirstOrDefault();
