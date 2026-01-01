@@ -90,12 +90,17 @@ public class UsersController : ControllerBase
 
             profile.UpdatedAt = DateTime.UtcNow;
 
-            var response = await client
+            // Update the profile
+            await client
                 .From<UserProfile>()
                 .Where(p => p.Id == userId)
                 .Update(profile);
 
-            var updated = response.Models.FirstOrDefault();
+            // Fetch the updated profile to return
+            var updated = await client
+                .From<UserProfile>()
+                .Where(p => p.Id == userId)
+                .Single();
 
             if (updated == null)
             {
