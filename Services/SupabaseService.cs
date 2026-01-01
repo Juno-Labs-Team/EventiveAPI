@@ -7,9 +7,11 @@ public class SupabaseService
 {
     private readonly Client _client;
     private readonly SupabaseConfig _config;
+    private readonly ILogger<SupabaseService> _logger;
 
-public SupabaseService(IConfiguration configuration)
+    public SupabaseService(IConfiguration configuration, ILogger<SupabaseService> logger)
     {
+        _logger = logger;
  
         _config = new SupabaseConfig
         {
@@ -41,25 +43,15 @@ public SupabaseService(IConfiguration configuration)
     {
         try
         {
-            // Create a temporary client with the user's JWT token to validate it
-            var options = new SupabaseOptions
-            {
-                AutoConnectRealtime = false,
-                AutoRefreshToken = false
-            };
-            
-            var userClient = new Client(_config.Url, _config.AnonKey, options);
-            
-            // Set the session with the provided JWT token
-            await userClient.Auth.SetSession(token, token);
-            
-            // Get the user from the session
-            var user = userClient.Auth.CurrentUser;
+            // Use the Supabase GoTrue API to validate the JWT and get the user
+            // This calls the /user endpoint which validates the token server-side
+            var user = await _client.Auth.GetUser(token);
             
             return user;
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogDebug(ex, "Failed to validate token");
             return null;
         }
     }
