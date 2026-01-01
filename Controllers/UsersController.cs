@@ -84,6 +84,9 @@ public class UsersController : ControllerBase
             
             if (request.Bio != null)
                 profile.Bio = request.Bio;
+            
+            if (request.AvatarUrl != null)
+                profile.AvatarUrl = request.AvatarUrl;
 
             profile.UpdatedAt = DateTime.UtcNow;
 
